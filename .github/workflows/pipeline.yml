@@ -40,38 +40,18 @@ jobs:
         run: |
           python test.py
 
-
   deploy:
-  needs: tests
-  runs-on: ubuntu-latest
-  steps:
-    - name: Trigger Render deploy (debug)
-      env:
-        RENDER_API_KEY: ${{secrets.RENDER_API_KEY}}
-        RENDER_SERVICE_ID: ${{secrets.RENDER_SERVICE_ID}}
-      shell: bash
-      run: |
-        set -euo pipefail
+    needs: tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger Render deploy (debug)
+        env:
+          RENDER_API_KEY: ${{secrets.RENDER_API_KEY}}
+          RENDER_SERVICE_ID: ${{secrets.RENDER_SERVICE_ID}}
+        shell: bash
+        run: |
+          set -euo pipefail
 
-        echo "== DEBUG =="
-        echo "Service ID lido: ${RENDER_SERVICE_ID:-<vazio>}"
-        # NÃO imprima a API key. Mostre só o tamanho para confirmar leitura:
-        echo "Tamanho da API key: ${#RENDER_API_KEY:-0} caracteres"
-
-        # Falhe cedo se faltar algo
-        if [[ -z "${RENDER_SERVICE_ID:-}" ]]; then
-          echo "ERRO: RENDER_SERVICE_ID está vazio. Confira o secret no repositório (Settings → Secrets → Actions)."
-          exit 1
-        fi
-        if [[ -z "${RENDER_API_KEY:-}" ]]; then
-          echo "ERRO: RENDER_API_KEY está vazio. Confira o secret no repositório."
-          exit 1
-        fi
-
-        echo "== Chamando API do Render =="
-        curl -v -X POST "https://api.render.com/v1/services/${RENDER_SERVICE_ID}/deploys" \
-          -H "Accept: application/json" \
-          -H "Authorization: Bearer ${RENDER_API_KEY}" \
-          -H "Content-Type: application/json" \
-          -d '{"clearCache": false}'
-
+          echo "== DEBUG =="
+          echo "Service ID lido: ${RENDER_SERVICE_ID:-<vazio>}"
+          # NÃO imprima a API key; só o tamanho para depurar:
